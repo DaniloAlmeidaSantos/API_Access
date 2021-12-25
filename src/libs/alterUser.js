@@ -10,14 +10,15 @@ module.exports = {
      * @param {String} password 
      * @param {int} age 
      * @param {String} departament 
-     * @returns
+     * @param {int} id 
+     * @returns 
      */
-    async createUserHash(name, lastName, email, password, age, departament) {
-        var status = 201;
-        var message = "User created success.";
+    async alterUserHash(name, lastName, email, password, age, departament, id) {
+        var status = 200;
+        var message = "User updated succefull";
 
-        if (name && lastName && email && password) {
-            await db.column ('email').where('email', email).select().from('users')
+        if (name && lastName && email && password && id) {
+            await db.column('email').where('email', email).select().from('users')
                 .then(data=>{
                     if(data.length > 0){
                         status = 409;
@@ -26,11 +27,11 @@ module.exports = {
                         bcrypt.genSalt(10, (err, salt) => {
                             bcrypt.hash(password, salt, (err, hash) => {
                                 if (err) {
-                                    status = 400;
-                                    message = `Error hash password: ${err}`;
+                                    status = 500;
+                                    message = err;
                                     throw new Error(err);
                                 } else {
-                                    db.insert(
+                                    db.where('ID', id).update(
                                         {
                                             name: name,
                                             lastName: lastName,
@@ -38,25 +39,30 @@ module.exports = {
                                             password: hash,
                                             age: age,
                                             departament: departament
-                                        }
+                                        }, ['id']
                                     )
                                     .table('users')
-                                    .then(function(data) {
-                                        if (data.length == 0) {
-                                            status = 400;
-                                            message = "Fail insert in database.";
-                                        }
-                                    })
-                                    .catch(err => {
-                                        status = 502;
-                                        message = `Error on server: ${err}`;
-                                        throw new Error(err);
-                                    });
+                                        .then(function(data) {
+                                            if (data.length <= 0) {
+                                                status = 400;
+                                                message = "User not found";
+                                            }
+                                        })
+                                        .catch(err => {
+                                            status = 502;
+                                            message = `Error for consulting: ${err}`;
+                                            throw new Error(err);
+                                        });
                                 }
                             }); 
                         });
                     }
-                });     
+                })
+                .catch(err => {
+                    status = 502;
+                    message = `Error for consulting: ${err}`;
+                    throw new Error(err);
+                });   
         } else {
             status = 400;
             message = "Required parameters not filled in.";

@@ -19,6 +19,12 @@ router.post("/access/login", (req, res) => {
                 expiresIn: 300 // expires in 5min
             });
 
+            req.session.user = {
+                userId: userId,
+                token: token,
+                auth: true
+            }
+
             res.status(value[0]).json({message: "User login", statusCode: value[0], data: { userId: userId, email: email, token: token, auth: true }});
         } else if (value[0] === 401) {
             res.status(value[0]).json({message: "Password incorrect.", statusCode: value[0], data: { userId: null, email: email, token: null, auth: false }});

@@ -4,6 +4,7 @@ const db = require('../../config/db');
 module.exports = {
     async login(email, password) {
         var status = 200;
+        var id;
 
         if (email && password) {
             await db.column('email', 'password', 'id').where('email', email).select().from('users')
@@ -13,11 +14,13 @@ module.exports = {
                     if (data.length <= 0) {
                         status = 400;
                     } else {
-                        console = bcrypt.compareSync(password, data[0].password);
+                        correct = bcrypt.compareSync(password, data[0].password);
 
                         if (!correct) {
                             status = 401;
                         } 
+
+                        id = data[0].id;
                     }
                 })
                 .catch(err => {

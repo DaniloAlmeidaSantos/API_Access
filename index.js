@@ -3,6 +3,7 @@ const morganBody = require('morgan-body');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const session = require('express-session');
 
 require("dotenv-safe").config({
     allowEmptyValues: true
@@ -10,13 +11,21 @@ require("dotenv-safe").config({
 
 const createUser = require('./src/controllers/UserCreate');
 const userLogin = require('./src/controllers/UserLogin');
+const updateUser = require('./src/controllers/UserPut');
+const principal = require('./src/controllers/Principal');
 
-const PORT = 3000;
-const HOST = '0.0.0.0';
+const authUser = require('./src/middlewares/authUser');
 
 const date = new Date();
 
 const app = express();
+
+app.use(session({
+    secret: "DBjhBnmnDB nasadbJHGFDHGSVAd @YTEY#@&Yhb3e7436 BDAHGDYSm DBHSDASD",
+    cookie: {
+        maxAge: 3000000000
+    }
+}));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -34,7 +43,9 @@ morganBody(app, {
 
 app.use("/", createUser);
 app.use("/", userLogin);
+app.use("/", authUser, updateUser);
+app.use("/", authUser, principal);
 
-app.listen(PORT, HOST, () => {
-    console.log(`Application is running ${PORT}...`)
+app.listen(process.env.EXPRESS_PORT, process.env.EXPRESS_HOST, () => {
+    console.log(`Application is running ${process.env.EXPRESS_PORT}...`)
 });

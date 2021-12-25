@@ -11,11 +11,7 @@ router.post("/access/create", (req, res) => {
     
     status
     .then(value => {
-        if (value === 201) {
-            res.status(value).json({message: "User create success", statusCode: value});
-        } else {
-            res.status(value).json({message: "Not created user", statusCode: value});
-        }
+        res.status(value[0]).json({message: value[1], statusCode: value[0]});
     })
     .catch(err => {
         res.status(500).json({message: "Error on server", statusCode: 500});

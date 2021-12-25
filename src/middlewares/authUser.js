@@ -1,13 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-// Database
-const { QueryTypes } = require('sequelize');
-const db = require('../../config/database/database'); 
-
 function userAuth(req, res, next){
     // Rececendo token pelo header 'x-access-token'
     const token = req.headers['x-access-token'];
-    //const token = req.session.user["token"]; 
 
     // Verificando se o token está sendo enviado na requisição
     if (!token) return res.status(401).json({ auth: false, message: 'No token provided.' });
