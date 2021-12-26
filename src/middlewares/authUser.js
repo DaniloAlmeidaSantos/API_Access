@@ -1,17 +1,17 @@
 const jwt = require('jsonwebtoken');
 
 function userAuth(req, res, next){
-    // Rececendo token pelo header 'x-access-token'
+    // Receiving token in headers
     const token = req.headers['x-access-token'];
 
-    // Verificando se o token está sendo enviado na requisição
+    // Verifyng if token existis in headers
     if (!token) return res.status(401).json({ auth: false, message: 'No token provided.' });
-    // Verica se token passado está correto
+    // Verify if token is correct
     jwt.verify(token, process.env.SECRET, function(err, decoded) {
-        // verifica se retornou erro
+        // Verify if ocurred error in authenticate
         if (err) return res.status(500).json({ auth: false, message: 'Failed to authenticate token.' });
         
-        // se tudo estiver ok, salva no request para uso posterior
+        // If is all ok, save the token for next requisitions
         req.userId = decoded.id;
 
         next();

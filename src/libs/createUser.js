@@ -3,6 +3,7 @@ const db = require('../../config/db');
 
 module.exports = {
     /**
+     * Method for create user
      * 
      * @param {String} name 
      * @param {String} lastName 
@@ -15,16 +16,24 @@ module.exports = {
     async createUserHash(name, lastName, email, password, age, departament) {
         var status = 201;
         var message = "User created success.";
-
+        
+        // Validating if exists content in parameters
         if (name && lastName && email && password) {
+            /**
+             * 1 - Calling the select for validation if exists email in table
+             * 2 - If exists, no return success, and no create user
+             * 3 - If not exists, return success, and create user in database
+             **/ 
             await db.column ('email').where('email', email).select().from('users')
                 .then(data=>{
                     if(data.length > 0){
                         status = 409;
                         message = "E-mail in body exists in database, please alter e-mail for succefull";
                     } else {
+                        // Ensuring encrypting the password for security
                         bcrypt.genSalt(10, (err, salt) => {
                             bcrypt.hash(password, salt, (err, hash) => {
+                                // If not exists error, insert in databse new user
                                 if (err) {
                                     status = 400;
                                     message = `Error hash password: ${err}`;

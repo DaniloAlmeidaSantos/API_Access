@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 const db = require('../../config/db');
 
+// Return's user data
 router.get("/access/:id", (req, res) => {
     const { id } = req.params;
     
+    // Req for database (SELECT)
     db.where('id', id).select().table('users')
         .then(data => {
             if (data > 0) {

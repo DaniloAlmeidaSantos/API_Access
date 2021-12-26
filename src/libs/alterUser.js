@@ -3,6 +3,7 @@ const db = require('../../config/db');
 
 module.exports = {
     /**
+     * Method for altering user data
      * 
      * @param {String} name 
      * @param {String} lastName 
@@ -24,8 +25,10 @@ module.exports = {
                         status = 409;
                         message = "E-mail in body exists in database, please alter e-mail for succefull";
                     } else {
+                        // Ensuring encrypting the password for security
                         bcrypt.genSalt(10, (err, salt) => {
                             bcrypt.hash(password, salt, (err, hash) => {
+                                // If not exists error, update user in databse 
                                 if (err) {
                                     status = 500;
                                     message = err;

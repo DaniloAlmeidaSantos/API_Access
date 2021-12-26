@@ -21,9 +21,9 @@ const date = new Date();
 const app = express();
 
 app.use(session({
-    secret: "DBjhBnmnDB nasadbJHGFDHGSVAd @YTEY#@&Yhb3e7436 BDAHGDYSm DBHSDASD",
+    secret: process.env.SECRET_SESSION,
     cookie: {
-        maxAge: 3000000000
+        maxAge: process.env.AGE_SESSION
     }
 }));
 
