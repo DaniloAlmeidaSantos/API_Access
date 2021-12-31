@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const create = require('../libs/createUser');
+const create = require("../../libs/teams/createTeam.js");
 
-// Route for create user
-router.post("/access/create", (req, res) => {
+// Route for create team
+router.post("/access/team/create", (req, res) => {
     // Body (JSON)
     const { 
-        name, lastName, password, email, age, departament        
+        teamName, image, bio        
     } = req.body;
     
     // Calling the class for create user
-    var status = create.createUserHash(name, lastName, email, password, age, departament);
+    const status = create.createTeam(teamName, bio, image);
     
     // Validation a return for the methods
     status

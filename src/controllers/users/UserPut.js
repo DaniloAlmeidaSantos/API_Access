@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
-const update = require('../libs/alterUser');
+const update = require("../../libs/users/alterUser");
 
 router.put("/access/alter/:id", (req, res) => {
     const { 
-        name, lastName, password, email, age, departament       
+        name, lastName, bio, image, password, email, age, genre, city, state, country, ddd, phone, cover   
     } = req.body;
 
     const { id } = req.params;
         
-    const status = update.alterUserHash(name, lastName, email, password, age, departament, id);
+    const status = update.alterUserHash(name, lastName, image, password, email, age, genre, city, state, country, ddd, phone, bio, cover, id);
 
     status
     .then(value => {
