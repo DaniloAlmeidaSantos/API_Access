@@ -4,6 +4,7 @@ module.exports = {
     /**
      * Method for altering user data
      * 
+     * @param {Integer} userId
      * @param {String} teamName 
      * @param {String} bio 
      * @param {String} image
@@ -15,7 +16,7 @@ module.exports = {
      * @param {int} id 
      * @returns 
      */
-    async alterTeam(teamName, bio, image, tiktok, twitter, facebook, whatsapp, id) {
+    async alterTeam(userId, teamName, bio, image, tiktok, twitter, facebook, whatsapp, id) {
         var status = 200;
         var message = "User updated succefull";
 
@@ -31,7 +32,7 @@ module.exports = {
                         status = 409;
                         message = "Team name in body exists in database, please alter team name for succefull";
                     } else {                                
-                        db.where("TEAM_ID", id).update(
+                        db.where({TEAM_ID: id, TEAM_ID_ADM: userId}).update(
                             {
                                 TEAM_NAME: teamName,
                                 TEAM_BIO: bio,

@@ -12,7 +12,7 @@ router.post("/access/team/alter/:id", (req, res) => {
     const {id} = req.params;
     
     // Calling the class for create user
-    const status = alter.alterTeam(teamName, bio, image, tiktok, twitter, facebook, whatsapp, id);
+    const status = alter.alterTeam(req.session.user.userId, teamName, bio, image, tiktok, twitter, facebook, whatsapp, id);
     
     // Validation a return for the methods
     status

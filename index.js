@@ -24,6 +24,9 @@ const app = express();
 app.use(session({
     secret: process.env.SECRET_SESSION,
     cookie: {
+        secure: false,
+        path: "/",
+        httpOnly: true,
         maxAge: Number(process.env.AGE_SESSION)
     }
 }));
@@ -44,7 +47,7 @@ morganBody(app, {
 
 app.use("/", createUser);
 app.use("/", userLogin);
-app.use("/", authUser, updateUser);
+app.use("/", updateUser);
 app.use("/", authUser, principal);
 app.use("/", authUser, createTeam);
 app.use("/", authUser, alterTeam);

@@ -8,9 +8,9 @@ router.post("/access/team/create", (req, res) => {
     const { 
         teamName, image, bio        
     } = req.body;
-    
+
     // Calling the class for create user
-    const status = create.createTeam(teamName, bio, image);
+    const status = create.createTeam(req.session.user.userId, teamName, bio, image);
     
     // Validation a return for the methods
     status

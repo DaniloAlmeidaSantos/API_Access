@@ -35,14 +35,12 @@ module.exports = {
                     if(data.length > 0){
                         status = 409;
                         message = "E-mail in body exists in database, please alter e-mail for succefull";
-                    } else {
+                    } else if (email.includes("@", 1)) {
                         // Ensuring encrypting the password for security
                         bcrypt.genSalt(10, (err, salt) => {
                             bcrypt.hash(password, salt, (err, hash) => {
                                 // If not exists error, insert in databse new user
                                 if (err) {
-                                    status = 400;
-                                    message = `Error hash password: ${err}`;
                                     throw new Error(err);
                                 } else {                                    
                                     db.insert(
@@ -76,6 +74,9 @@ module.exports = {
                                 }
                             }); 
                         });
+                    } else {
+                        status = 409;
+                        message = "E-mail format incorrect.";
                     }
                 });     
         } else {

@@ -41,6 +41,7 @@ module.exports = {
             status = 400;
         }
 
+        // return status and id (for session)
         return [status, id];
     } 
 };

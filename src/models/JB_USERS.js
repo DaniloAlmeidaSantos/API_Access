@@ -1,6 +1,5 @@
 const connection = require("../../config/db_sequelize");
 const DataTypes = require("sequelize");
-const Teams = require("./JB_TEAMS");
 
 const users = connection.define("JB_USERS", {
     US_ID: {
@@ -8,9 +7,6 @@ const users = connection.define("JB_USERS", {
         allowNull:  false,
         primaryKey: true,
         autoIncrement: true
-    },
-    US_TEAM_ID: {
-        type: DataTypes.INTEGER
     },
     US_NAME: {
         type: DataTypes.STRING(100),
@@ -47,7 +43,7 @@ const users = connection.define("JB_USERS", {
         defaultValue:"N",
         allowNull: true
     },
-    US_PASSAWORD: {
+    US_PASSWORD: {
         type: DataTypes.STRING(255),
         allowNull: false
     },
@@ -77,9 +73,19 @@ const users = connection.define("JB_USERS", {
         type: DataTypes.STRING(100),
         allowNull: true
     },
+    US_COVER: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    US_DDD: {
+        type: DataTypes.STRING(2),
+        allowNull: false
+    },
+    US_PHONE: {
+        type: DataTypes.STRING(9),
+        allowNull: false
+    }
 
 });
-
-users.belongsTo(Teams,{foreignKey:"FK_US_TEAM_ID"});
 
 module.exports = users;     

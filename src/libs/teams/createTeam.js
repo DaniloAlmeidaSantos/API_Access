@@ -4,17 +4,18 @@ module.exports = {
     /**
      * Method for create team
      * 
+     * @param {Int} userId
      * @param {String} teamName 
      * @param {String} bio 
      * @param {String} image
      * @returns
      */
-    async createTeam(teamName, bio, image) {
+    async createTeam(userId, teamName, bio, image) {
         var status = 201;
         var message = "Team created success.";
         
         // Validating if exists content in parameters
-        if (teamName) {
+        if (teamName && userId) {
             /**
              * 1 - Calling the select for validation if exists team name in table
              * 2 - If exists, no return success, and no create team
@@ -27,7 +28,8 @@ module.exports = {
                         message = "Team name in body exists in database, please alter team name for succefull";
                     } else {                                
                         db.insert(
-                            {
+                            {   
+                                TEAM_ID_ADM: userId,
                                 TEAM_NAME: teamName,
                                 TEAM_BIO: bio,
                                 TEAM_IMAGE: (image) ? image : process.env.URL_IMAGE_DEFAULT
