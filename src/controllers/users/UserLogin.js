@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const userLogin = require('../libs/loginUser');
-const jwt = require('jsonwebtoken');
+const userLogin = require("../../libs/users/loginUser");
+const jwt = require("jsonwebtoken");
 
 router.post("/access/login", (req, res) => {
     const { 
@@ -23,7 +23,7 @@ router.post("/access/login", (req, res) => {
                 userId: userId,
                 token: token,
                 auth: true
-            }
+            };
 
             res.status(value[0]).json({message: "User login", statusCode: value[0], data: { userId: userId, email: email, token: token, auth: true }});
         } else if (value[0] === 401) {

@@ -73,3 +73,6 @@ typings/
 
 # FuseBox cache
 .fusebox/
+
+# DB tables
+.sql

@@ -1,16 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const create = require('../libs/createUser');
+const alter = require("../../libs/teams/alterTeam.js");
 
-// Route for create user
-router.post("/access/create", (req, res) => {
+// Route for create team
+router.post("/access/team/alter/:id", (req, res) => {
     // Body (JSON)
     const { 
-        name, lastName, password, email, age, departament        
+        teamName, image, bio, tiktok, twitter, facebook, whatsapp        
     } = req.body;
+
+    const {id} = req.params;
     
     // Calling the class for create user
-    var status = create.createUserHash(name, lastName, email, password, age, departament);
+    const status = alter.alterTeam(req.session.user.userId, teamName, bio, image, tiktok, twitter, facebook, whatsapp, id);
     
     // Validation a return for the methods
     status

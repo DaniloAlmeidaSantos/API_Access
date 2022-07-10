@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
-const db = require('../../config/db');
+const bcrypt = require("bcrypt");
+const db = require("../../../config/db");
 
 module.exports = {
     /**
@@ -15,7 +15,7 @@ module.exports = {
 
         // Validating if exists content in parameters
         if (email && password) {
-            await db.column('email', 'password', 'id').where('email', email).select().from('users')
+            await db.column("US_EMAIL", "US_PASSWORD", "US_ID").where("US_EMAIL", email).select().from("JB_USERS")
                 .then(data => {
                     var correct;
 
@@ -23,24 +23,25 @@ module.exports = {
                         status = 400;
                     } else {
                         // Decrypting password
-                        correct = bcrypt.compareSync(password, data[0].password);
+                        correct = bcrypt.compareSync(password, data[0].US_PASSWORD);
                         
                         // Validating if decrypting ocurred success
                         if (!correct) {
                             status = 401;
                         } 
 
-                        id = data[0].id;
+                        id = data[0].US_ID;
                     }
                 })
                 .catch(err => {
                     status = 400;
-                    throw new Error(err);
+                    throw new Error(err); 
                 });
         } else {
             status = 400;
         }
 
+        // return status and id (for session)
         return [status, id];
     } 
-}
+};
