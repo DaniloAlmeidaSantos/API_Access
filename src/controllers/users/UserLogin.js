@@ -16,7 +16,7 @@ router.post("/access/login", (req, res) => {
 
         if (value[0] === 200) {
             const token = jwt.sign({ userId }, process.env.SECRET, {
-                expiresIn: 300 // expires in 5min
+                expiresIn: '24h' // expires in 5min
             });
 
             req.session.user = {

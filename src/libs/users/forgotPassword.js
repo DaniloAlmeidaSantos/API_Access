@@ -11,7 +11,7 @@ module.exports = {
             code = parseInt(code);
             var userId = 0;
 
-            await db.where("US_EMAIL", email).select().table("JB_USERS")
+            await db.where("USUEMAIL", email).select().table("WINNUSERS")
             .then(data => {
                 
                 if (data.length > 0) {

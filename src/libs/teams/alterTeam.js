@@ -1,66 +1,73 @@
 const db = require("../../../config/db");
+const { cnpj } = require('cpf-cnpj-validator');
 
 module.exports = {
     /**
-     * Method for altering user data
+     * Method for create team
      * 
-     * @param {Integer} userId
+     * @param {Int} userId
      * @param {String} teamName 
      * @param {String} bio 
      * @param {String} image
-     * @param {String} email 
-     * @param {String} tiktok 
-     * @param {String} twitter 
-     * @param {String} facebook 
-     * @param {String} whatsapp 
-     * @param {int} id 
-     * @returns 
+     * @returns
      */
-    async alterTeam(userId, teamName, bio, image, tiktok, twitter, facebook, whatsapp, id) {
-        var status = 200;
-        var message = "User updated succefull";
+    async alterTeam(id, team_name, team_logo, team_banner, team_CNPJ) {
+        var status = 0;
+        var message = "";
 
-        if (teamName) {
-           /**
-             * 1 - Calling the select for validation if exists team name in table
-             * 2 - If exists, no return success, and no create team
-             * 3 - If not exists, return success, and create team in database
-             **/ 
-            await db.column ("TEAM_NAME").where("TEAM_NAME", teamName).select().from("JB_TEAMS")
-                .then(data=>{ 
-                    if(data.length > 0){
-                        status = 409;
-                        message = "Team name in body exists in database, please alter team name for succefull";
-                    } else {                                
-                        db.where({TEAM_ID: id, TEAM_ID_ADM: userId}).update(
-                            {
-                                TEAM_NAME: teamName,
-                                TEAM_BIO: bio,
-                                TEAM_IMAGE: (image) ? image : process.env.URL_IMAGE_DEFAULT,
-                                TEAM_TIKTOK: tiktok,
-                                TEAM_TWITTER: twitter,
-                                TEAM_FACEBOOK: facebook,
-                                TEAM_WHATSAPP_GROUP: whatsapp
-                            }
-                        )
-                        .table("JB_TEAMS")
-                        .then(function(data) {
-                            if (data.length == 0) {
-                                status = 400;
-                                message = "Fail update in database.";
-                            }
-                        })
-                        .catch(err => {
-                            status = 502;
-                            message = `Error on server: ${err}`;
-                            throw new Error(err);
-                        });
-                    }
-                });     
-        } else {
-            status = 400;
-            message = "Required parameters not filled in.";
+        function verifyField(field, field_name, typeValidation){
+            if(typeValidation === 'isEmpty?'){
+                if(!field){
+                    message = `Field: ${field_name} is required`;
+                    status = 400;
+                    return [{ message: message, status: status }];
+
+                } 
+            } else if(typeValidation === 'haveLetter?'){
+                if(isNaN(field)) {
+                    message = `Field: ${field_name} only accept numbers`;
+                    status = 400;
+                    return [{ message: message, status: status }];
+                    
+                }
+            }
         }
+        
+        // Verifing field
+        verifyField(team_name, 'team_name', 'isEmpty?');
+
+        // Verifing if user is logged in
+        const userisLogged = await db.select(['USUID', 'USUIDTEAM']).from('WINNUSERS').where('USUID', id);
+        console.log(userisLogged);
+
+        if(!userisLogged){ message = "User is not logged in, please try again"; status = 401; return [{ message: message, status: status }] }
+
+        // Verifing CNPJ
+        const cnpjIsValid = cnpj.isValid(team_CNPJ);
+        if(!cnpjIsValid){ message = "CNPJ is not valid"; status = 400; return [{ message: message, status: status }] }
+
+        const result = await db.update({
+            TEAMID: null || undefined,
+            TEAMLOGO: team_logo ? team_logo : null || undefined,
+            TEAMBANNER: team_banner ? team_banner : null || undefined,
+            TEAMNAME: team_name,
+            TEAMNAMEVERIFIED: null || undefined,
+            TEAMCNPJ: team_CNPJ ? team_CNPJ : null || undefined,
+            TEAMQTDPLAYERS: null || undefined,
+        }).into("WINNTEAMS").where('TEAMID', userisLogged[0].USUIDTEAM);
+
+        if(result){
+            message = 'Team has been updated';
+            status = 200;
+            return [{ message: message, status: status }];
+
+        }else {
+            message = "There's an problem in the server, try again later";
+            status = 200;
+            return [{ message: message, status: status }];
+
+        }
+
 
         return [status, message];
     }

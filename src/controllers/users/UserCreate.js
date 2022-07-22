@@ -6,12 +6,11 @@ const create = require("../../libs/users/createUser");
 router.post("/access/create", (req, res) => {
     // Body (JSON)
     const { 
-        name, lastName, image, password, email, age, genre, city, state, country, ddd, phone       
+        usuname, usulogo, usunickname, usudob, usuemail, usupassword
     } = req.body;
     
     // Calling the class for create user
-    const status = create.createUserHash(name, lastName, image, password, email, age, genre, city, state, country, ddd, phone);
-    
+    const status = create.createUserHash(usuname, usulogo, usunickname, usudob, usuemail, usupassword);
     // Validation a return for the methods
     status
     .then(value => {

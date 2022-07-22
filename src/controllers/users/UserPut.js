@@ -6,12 +6,12 @@ const forgotPassword = require("../../libs/users/forgotPassword");
 
 router.put("/access/alter/:id", (req, res) => {
     const { 
-        name, lastName, bio, image, password, email, age, genre, city, state, country, ddd, phone, cover   
+        logo, name, nickname, dob, email, password,  
     } = req.body;
 
     const {id} = req.params;
     
-    const status = update.alterUserHash(name, lastName, image, password, email, age, genre, city, state, country, ddd, phone, bio, cover, id);
+    const status = update.alterUserHash(id, logo, name, nickname, dob, email, password);
 
     status
     .then(value => {

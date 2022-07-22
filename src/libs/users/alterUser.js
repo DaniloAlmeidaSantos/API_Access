@@ -6,24 +6,16 @@ module.exports = {
     /**
      * Method for altering user data
      * 
+     * @param {String} logo 
      * @param {String} name 
-     * @param {String} lastName 
-     * @param {String} image
-     * @param {String} email 
-     * @param {String} password 
-     * @param {int} age 
-     * @param {String} genre 
-     * @param {String} city 
-     * @param {String} state 
-     * @param {String} country 
-     * @param {int} id 
-     * @param {String} ddd
-     * @param {String} phone
-     * @param {String} bio
-     * @param {String} cover
+     * @param {String} nickname
+     * @param {Date} dob
+     * @param {String} email
+     * @param {String} password
      * @returns 
      */
-    async alterUserHash(name, lastName, image, password, email, age, genre, city, state, country, ddd, phone, bio, cover, id) {
+    async alterUserHash(id, logo, name, nickname, dob, email, password) {
+        // async alterUserHash(name, lastName, image, password, email, age, genre, city, state, country, ddd, phone, bio, cover, id) {
         var status = 200;
         var message = "User updated succefull";
         var valEmailResult = true;
@@ -36,7 +28,7 @@ module.exports = {
             }
         });
 
-        await db.where("US_ID", id).select().from("JB_USERS")
+        await db.where("USUID", id).select().from("WINNUSERS")
             .then(data=>{
                 if(data.length > 0 && valEmailResult){
                     // Ensuring encrypting the password for security
@@ -57,24 +49,16 @@ module.exports = {
                             } else {
                                 db.update(
                                     {
-                                        US_NAME: (name != data[0].US_NAME) ? name : data[0].US_NAME,
-                                        US_LASTNAME: (lastName != data[0].US_LASTNAME) ? lastName : data[0].US_LASTNAME,
-                                        US_EMAIL: email,
-                                        US_PASSWORD: hash,
-                                        US_AGE: (age != data[0].US_AGE) ? age : data[0].US_AGE,
-                                        US_GENRE: (genre != data[0].US_AGE) ? genre : data[0].US_AGE,
-                                        US_IMAGE: (image != data[0].US_IMAGE) ? image : data[0].US_IMAGE,
-                                        US_CITY: (city != data[0].US_CITY) ? city : data[0].US_CITY,
-                                        US_STATE: (state != data[0].US_STATE) ? state : data[0].US_STATE,
-                                        US_COUNTRY: (country != data[0].US_COUNTRY) ? country : data[0].US_COUNTRY,
-                                        US_DDD: (ddd != data[0].US_DDD) ? ddd : data[0].US_DDD,
-                                        US_PHONE: (phone != data[0].US_PHONE) ? phone : data[0].US_PHONE,
-                                        US_COVER: (cover != data[0].US_COVER) ? cover : data[0].US_COVER,
-                                        US_BIO: (bio != data[0].US_BIO) ? bio : data[0].US_COVER
+                                        USUNAME: (name != data[0].USUNAME) ? name : data[0].USUNAME,
+                                        USUEMAIL: email,
+                                        USUPASSWORD: hash,
+                                        USULOGO: (logo != data[0].USULOGO) ? logo : data[0].USULOGO,
+                                        USUNICKNAME: (nickname != data[0].USUNICKNAME) ? nickname : data[0].USUNICKNAME,
+                                        USUDOB: (dob != data[0].USUDOB) ? dob : data[0].USUDOB,
                                     }, ["id"]
                                 )
-                                .where("US_ID", id)
-                                .table("JB_USERS")
+                                .where("USUID", id)
+                                .table("WINNUSERS")
                                 .then(data => {
                                     if (data.length <= 0) {
                                         status = 400;

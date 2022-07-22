@@ -9,12 +9,12 @@ class validations {
     async validateEmail() {
         var result = true;
         
-        await db.select().where("US_EMAIL", this.email).table("JB_USERS")
+        await db.select().where("USUEMAIL", this.email).table("WINNUSERS")
         .then(data => {
             for (const key in data) {
                 if (Object.hasOwnProperty.call(data, key)) {
                     const element = data[key];
-                    if (element.US_ID != this.id) {
+                    if (element.USUID != this.id) {
                         result = false;
                     }
                 }

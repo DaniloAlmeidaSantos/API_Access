@@ -1,4 +1,5 @@
 const db = require("../../../config/db");
+const { cnpj } = require('cpf-cnpj-validator');
 
 module.exports = {
     /**
@@ -10,50 +11,66 @@ module.exports = {
      * @param {String} image
      * @returns
      */
-    async createTeam(userId, teamName, bio, image) {
-        var status = 201;
-        var message = "Team created success.";
-        
-        // Validating if exists content in parameters
-        if (teamName && userId) {
-            /**
-             * 1 - Calling the select for validation if exists team name in table
-             * 2 - If exists, no return success, and no create team
-             * 3 - If not exists, return success, and create team in database
-             **/ 
-            await db.column ("TEAM_NAME").where("TEAM_NAME", teamName).select().from("JB_TEAMS")
-                .then(data=>{ 
-                    if(data.length > 0){
-                        status = 409;
-                        message = "Team name in body exists in database, please alter team name for succefull";
-                    } else {                                
-                        db.insert(
-                            {   
-                                TEAM_ID_ADM: userId,
-                                TEAM_NAME: teamName,
-                                TEAM_BIO: bio,
-                                TEAM_IMAGE: (image) ? image : process.env.URL_IMAGE_DEFAULT
-                            }
-                        )
-                        .table("JB_TEAMS")
-                        .then(function(data) {
-                            if (data.length == 0) {
-                                status = 400;
-                                message = "Fail insert in database.";
-                            }
-                        })
-                        .catch(err => {
-                            status = 502;
-                            message = `Error on server: ${err}`;
-                            throw new Error(err);
-                        });
-                    }
-                });     
-        } else {
-            status = 400;
-            message = "Required parameters not filled in.";
-        }
+    async createTeam(id, team_name, team_logo, team_banner, team_CNPJ) {
+        var status = 0;
+        var message = "";
 
-        return [status, message];
+        function verifyField(field, field_name, typeValidation){
+            if(typeValidation === 'isEmpty?'){
+                if(!field){
+                    message = `Field: ${field_name} is required`;
+                    status = 400;
+                    return [{ message: message, status: status }];
+
+                } 
+            } else if(typeValidation === 'haveLetter?'){
+                if(isNaN(field)) {
+                    message = `Field: ${field_name} only accept numbers`;
+                    status = 400;
+                    return [{ message: message, status: status }];
+                    
+                }
+            }
+        }
+        
+        // Verifing field
+        verifyField(team_name, 'team_name', 'isEmpty?');
+
+        // Verifing if user is logged in
+        const userisLogged = await db.select('USUID').from('WINNUSERS').where('USUID', id);
+
+        if(!userisLogged){ message = "User is not logged in, please try again"; status = 401; return [{ message: message, status: status }] }
+
+        // Verifing if user have some team
+        const haveTeam = await db.select('USUIDTEAM').from('WINNUSERS').where('USUID', id);
+
+        if(haveTeam[0].USUIDTEAM){ message = "This user already have team"; status = 401; return [{ message: message, status: status }] }
+
+        // Verifing CNPJ
+        const cnpjIsValid = cnpj.isValid(team_CNPJ);
+        if(!cnpjIsValid){ message = "CNPJ is not valid"; status = 400; return [{ message: message, status: status }] }
+
+        const result = await db.insert({
+            TEAMID: null || undefined,
+            TEAMLOGO: team_logo ? team_logo : null || undefined,
+            TEAMBANNER: team_banner ? team_banner : null || undefined,
+            TEAMNAME: team_name,
+            TEAMNAMEVERIFIED: null || undefined,
+            TEAMCNPJ: team_CNPJ ? team_CNPJ : null || undefined,
+            TEAMQTDPLAYERS: null || undefined,
+            TEAMACTIVE: 'A' // ACTIVE
+        }).into("WINNTEAMS");
+
+        if(result){
+            message = 'Team has been created';
+            status = 200;
+            return [{ message: message, status: status }];
+
+        }else {
+            message = "There's an problem in the server, try again later";
+            status = 200;
+            return [{ message: message, status: status }];
+
+        }
     }
 };

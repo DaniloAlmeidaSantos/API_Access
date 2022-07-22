@@ -15,7 +15,7 @@ module.exports = {
 
         // Validating if exists content in parameters
         if (email && password) {
-            await db.column("US_EMAIL", "US_PASSWORD", "US_ID").where("US_EMAIL", email).select().from("JB_USERS")
+            await db.column("USUEMAIL", "USUPASSWORD", "USUID").where("USUEMAIL", email).select().from("WINNUSERS")
                 .then(data => {
                     var correct;
 
@@ -23,14 +23,14 @@ module.exports = {
                         status = 400;
                     } else {
                         // Decrypting password
-                        correct = bcrypt.compareSync(password, data[0].US_PASSWORD);
+                        correct = bcrypt.compareSync(password, data[0].USUPASSWORD);
                         
                         // Validating if decrypting ocurred success
                         if (!correct) {
                             status = 401;
                         } 
 
-                        id = data[0].US_ID;
+                        id = data[0].USUID;
                     }
                 })
                 .catch(err => {
